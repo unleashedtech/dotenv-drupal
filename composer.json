@@ -1,0 +1,18 @@
+{
+    "name": "unleashedtech/dotenv-drupal",
+    "description": "",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "symfony/dotenv": "^5.3"
+    },
+    "autoload": {
+        "psr-4": { "UnleashedTech\\Drupal\\Dotenv\\": "src/" }
+    },
+    "extra": {
+        "branch-alias": { "dev-main": "1.0-dev" }
+    }
+}
