@@ -59,9 +59,6 @@ This package will auto-load various `settings.{{environment}}.php` or
 #### Configuring Drupal via ENV Variables
 This package will provide many default setting & configuration values based on the
 detected environment. Some of these values can be populated by environment variables.
-If the project requires complex configuration in Drupal settings files, this package
-will attempt to auto-load those files based on environment
-(e.g. `settings.dev.php`, `config.dev.php`, etc.).
 
 Environment variables can be set in `.env` files, or via modifying server configuration.
 For production environments, environment variables should ideally be defined via server

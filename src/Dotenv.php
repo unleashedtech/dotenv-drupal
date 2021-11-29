@@ -177,6 +177,10 @@ class Dotenv
     public function getSettings(): array
     {
         $envName = $this->getEnvironmentName();
+        $defaultSettingsFile = $this->getAppPath() . '/sites/default/default.settings.php';
+        if (file_exists($defaultSettingsFile)) {
+            include $this->getAppPath() . '/sites/default/default.settings.php';
+        }
         $settings['config_sync_directory'] = $this->getConfigSyncPath();
         $settings['file_public_path'] = $this->getPublicFilePath();
         $settings['file_private_path'] = $this->getPrivateFilePath();
