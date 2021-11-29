@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.2] - 2021-11-29
+
+### Fixed
+
+- Updating Dotenv::getSettings to define generic settings based on default.settings.php.
+
 ## [0.1.1] - 2021-11-29
 
 ### Fixed
@@ -14,6 +20,7 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.1...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.2...main
+[0.1.2]: https://github.com/unleashedtech/dotenv-drupal/releases/tag/v0.1.2
 [0.1.1]: https://github.com/unleashedtech/dotenv-drupal/releases/tag/v0.1.1
 [0.1.0]: https://github.com/unleashedtech/dotenv-drupal/releases/tag/v0.1.0
