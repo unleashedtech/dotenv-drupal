@@ -56,10 +56,22 @@ If conditional logic is required for a given site, such logic is still supported
 This package will auto-load various `settings.{{environment}}.php` or
 `config.{{environment}}.php` files, if they exist.
 
-#### Configuring Drupal via ENV Files
-Drupal needs to know DB info, settings & any config overrides.
+#### Configuring Drupal via ENV Variables
+This package will provide many default setting & configuration values based on the
+detected environment. Some of these values can be populated by environment variables.
+If the project requires complex configuration in Drupal settings files, this package
+will attempt to auto-load those files based on environment
+(e.g. `settings.dev.php`, `config.dev.php`, etc.).
 
-##### Drupal Database Configuration
+Environment variables can be set in `.env` files, or via modifying server configuration.
+For production environments, environment variables should ideally be defined via server
+configuration.
+
+* [Database Configuration](#database-configuration)
+* [Solr Configuration](#solr-configuration)
+* More configuration options coming soon!
+
+##### Database Configuration
 The default database connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
@@ -76,6 +88,19 @@ For multi-site installations, do _not_ specify a database name in the ENV file(s
 
 ```dotenv
 DATABASE_URL=mysql://foo:bar@host:3306
+```
+
+##### Solr Configuration
+The default Solr connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
+
+```dotenv
+SOLR_URL=host:port
+```
+
+For example:
+
+```dotenv
+SOLR_URL=solr.foo.site:8983
 ```
 
 ##### Supported Placeholders
