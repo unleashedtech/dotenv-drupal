@@ -191,6 +191,9 @@ class Dotenv
         $settings['container_yamls'] = [
             $this->getAppPath() . '/sites/' . $envName . '.services.yml',
         ];
+        if (isset($_ENV['HASH_SALT'])) {
+            $settings['hash_salt'] = $_ENV['HASH_SALT'];
+        }
         switch ($envName) {
             case 'dev':
                 $settings['cache']['bins'] = [
@@ -200,9 +203,11 @@ class Dotenv
                 ];
                 $settings['hash_salt'] = 'foo';
                 $settings['rebuild_access'] = FALSE;
-                $settings['trusted_host_patterns'] = [
-                    $_SERVER['VIRTUAL_HOST'],
-                ];
+                if (isset($_SERVER['VIRTUAL_HOST'])) {
+                    $settings['trusted_host_patterns'] = [
+                        $_SERVER['VIRTUAL_HOST'],
+                    ];
+                }
                 $settings['skip_permissions_hardening'] = TRUE;
                 $settings['update_free_access'] = FALSE;
         }
@@ -264,7 +269,7 @@ class Dotenv
             $this->getAppPath(),
             $this->getProjectPath(),
             $this->getSiteName(),
-            $_SERVER['VIRTUAL_HOST'],
+            $_SERVER['VIRTUAL_HOST'] ?? NULL,
         ], $string);
     }
 }
