@@ -32,7 +32,7 @@ class Dotenv
             if (file_exists($root . '/.env') || file_exists($root . '/.env.dist')) {
                 $dotenv->loadEnv(DRUPAL_ROOT . '/../.env');
             } elseif (file_exists($root . '/.env.dev')) {
-                $_ENV['APP_ENV'] = 'dev';
+                $_SERVER['APP_ENV'] = 'dev';
                 $dotenv->load(DRUPAL_ROOT . '/../.env.dev');
             }
         }
@@ -67,7 +67,7 @@ class Dotenv
      */
     public function getEnvironmentName(): string
     {
-        return strtolower($_ENV['APP_ENV']);
+        return strtolower($_SERVER['APP_ENV']);
     }
 
     /**
@@ -93,8 +93,8 @@ class Dotenv
     public function getConfig(): array
     {
         $config = [];
-        if (isset($_ENV['SOLR_URL'])) {
-            $parts = parse_url($_ENV['SOLR_URL']);
+        if (isset($_SERVER['SOLR_URL'])) {
+            $parts = parse_url($_SERVER['SOLR_URL']);
             $config['search_api.server.afa_solr']['backend_config']['connector_config'] = [
                 'host' => $parts['host'],
                 'port' => $parts['port'],
@@ -141,7 +141,7 @@ class Dotenv
 
     public function getDatabases(): array
     {
-        $db_url = parse_url($_ENV['DATABASE_URL']);
+        $db_url = parse_url($_SERVER['DATABASE_URL']);
         return [
             'default' =>
                 [
@@ -165,7 +165,7 @@ class Dotenv
         if (isset($this->databaseName)) {
             return $this->databaseName;
         }
-        $result = parse_url($_ENV['DATABASE_URL'], PHP_URL_PATH);
+        $result = parse_url($_SERVER['DATABASE_URL'], PHP_URL_PATH);
         return (FALSE === $result) ? $this->getSiteName() : substr($result, 1);
     }
 
@@ -191,8 +191,8 @@ class Dotenv
         $settings['container_yamls'] = [
             $this->getAppPath() . '/sites/' . $envName . '.services.yml',
         ];
-        if (isset($_ENV['HASH_SALT'])) {
-            $settings['hash_salt'] = $_ENV['HASH_SALT'];
+        if (isset($_SERVER['HASH_SALT'])) {
+            $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
         switch ($envName) {
             case 'dev':
