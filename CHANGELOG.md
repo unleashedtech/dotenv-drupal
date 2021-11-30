@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.5] - 2021-11-30
+
+### Changed
+
+- Revising Dotenv::getConfig to support more custom Solr configurations.
+
 ## [0.1.4] - 2021-11-30
 
 ### Fixed
@@ -33,7 +39,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.4...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.5...main
+[0.1.3]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.4...0.1.5
 [0.1.3]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.3...0.1.4
 [0.1.3]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.1...0.1.2
