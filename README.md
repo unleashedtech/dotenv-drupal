@@ -91,14 +91,21 @@ DATABASE_URL=mysql://foo:bar@host:3306
 The default Solr connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
-SOLR_URL=host:port
+SOLR_URL=http://localhost
 ```
 
-For example:
+This package makes several assumptions, which can be overridden via the `SOLR_URL` DSN. The DSN in the
+example above is automatically expanded to:
 
 ```dotenv
-SOLR_URL=solr.foo.site:8983
+SOLR_URL=http://default@localhost:8983#default
 ```
+
+In the expanded example above, the `user` is the name of the Solr core & the `fragment` is the Drupal machine
+name for the connection. Consider revising Solr core & Drupal Solr server machine names to `default`,
+so the shorter DSN can be used.
+
+Streamlined environment-dependent configuration of _one_ Solr core is supported at this time.
 
 ##### Supported Placeholders
 * `{{app_path}}`: The path where Drupal is located.

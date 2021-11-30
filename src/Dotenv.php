@@ -95,9 +95,13 @@ class Dotenv
         $config = [];
         if (isset($_SERVER['SOLR_URL'])) {
             $parts = parse_url($_SERVER['SOLR_URL']);
-            $config['search_api.server.afa_solr']['backend_config']['connector_config'] = [
-                'host' => $parts['host'],
-                'port' => $parts['port'],
+            $name = $parts['fragment'] ?? 'default';
+            $config['search_api.server.' . $name]['backend_config']['connector_config'] = [
+                'scheme' => $parts['scheme'] ?? 'http',
+                'host' => $parts['host'] ?? 'localhost',
+                'port' => $parts['port'] ?? 8983,
+                'path' => $parts['path'] ?? '/',
+                'core' => $parts['user'] ?? 'default',
             ];
         }
         switch ($this->getEnvironmentName()) {
