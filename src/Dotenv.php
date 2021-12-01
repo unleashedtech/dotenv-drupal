@@ -254,7 +254,7 @@ class Dotenv
 
     public function getPublicFilePath(): string
     {
-        return $this->getAppPath() . '/sites/' . $this->getSiteName() . '/files';
+        return 'sites/' . $this->getSiteName() . '/files';
     }
 
     public function getConfigSyncPath(): string

@@ -64,11 +64,11 @@ Environment variables can be set in `.env` files, or via modifying server config
 For production environments, environment variables should ideally be defined via server
 configuration.
 
-* [Database Configuration](#database-configuration)
-* [Solr Configuration](#solr-configuration)
+* [DATABASE_URL](#database_url)
+* [SOLR_URL](#solr_url)
 * More configuration options coming soon!
 
-##### Database Configuration
+##### DATABASE_URL
 The default database connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
@@ -87,7 +87,7 @@ For multi-site installations, do _not_ specify a database name in the ENV file(s
 DATABASE_URL=mysql://foo:bar@host:3306
 ```
 
-##### Solr Configuration
+##### SOLR_URL
 The default Solr connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
