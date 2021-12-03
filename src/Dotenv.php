@@ -220,6 +220,23 @@ class Dotenv
     }
 
     /**
+     * Gets the Drupal-multi-site $sites array, based on environment variables.
+     *
+     * @return array
+     *   The Drupal-multi-site $sites array, based on environment variables.
+     */
+    public function getSites(): array {
+        $domains = explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
+        $sites = explode(',', $_SERVER['SITES'] ?? 'default');
+        foreach ($sites as $site) {
+            foreach ($domains as $domain) {
+                $sites[$site . '.' . $domain] = $site;
+            }
+        }
+        return $sites;
+    }
+
+    /**
      * Gets the absolute path for the given path.
      *
      * @param string $path

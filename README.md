@@ -10,7 +10,7 @@ component's documentation about how `.env` files are used.
 ### Configuring Drupal
 First, you'll need to configure Drupal to use this package.
 
-#### Drupal Settings Files
+#### Drupal Settings & Sites Files
 Drupal is typically configured via `settings.php` files in various directories.
 To use this package with Drupal, some code will need to be added to the top of
 the relevant `settings.php` file(s):
@@ -36,8 +36,8 @@ empty to allow automatic database name selection based on the site name.
 <?php
 use UnleashedTech\Drupal\Dotenv\Dotenv;
 $dotenv = new Dotenv();
-$dotenv->setSiteName(__DIR__);
-require __DIR__ . '../default/settings.php';
+$dotenv->setSiteName(basename(__DIR__));
+require __DIR__ . '/../default/settings.php';
 ```
 
 If you'd like, you can manually set the database name for each site via the
@@ -47,14 +47,27 @@ If you'd like, you can manually set the database name for each site via the
 <?php
 use UnleashedTech\Drupal\Dotenv\Dotenv;
 $dotenv = new Dotenv();
-$dotenv->setSiteName(__DIR__);
+$dotenv->setSiteName(basename(__DIR__));
 $dotenv->setDatabaseName('foo');
-require __DIR__ . '../default/settings.php';
+require __DIR__ . '/../default/settings.php';
 ```
 
 If conditional logic is required for a given site, such logic is still supported.
 This package will auto-load various `settings.{{environment}}.php` or
 `config.{{environment}}.php` files, if they exist.
+
+###### Sites Files
+This package also provides functionality to configure Drupal's `$sites` variable
+via `sites.php`. The `$sites` variable is built from data in the [DOMAINS](#domains)
+& [SITES](#sites) environment variables. You will need to add the following code
+to `sites.php`:
+
+```php
+<?php
+use UnleashedTech\Drupal\Dotenv\Dotenv;
+$dotenv = new Dotenv();
+$sites = $dotenv->getSites();
+```
 
 #### Configuring Drupal via ENV Variables
 This package will provide many default setting & configuration values based on the
@@ -65,6 +78,8 @@ For production environments, environment variables should ideally be defined via
 configuration.
 
 * [DATABASE_URL](#database_url)
+* [DOMAINS](#domains)
+* [SITES](#sites)
 * [SOLR_URL](#solr_url)
 * More configuration options coming soon!
 
@@ -85,6 +100,20 @@ For multi-site installations, do _not_ specify a database name in the ENV file(s
 
 ```dotenv
 DATABASE_URL=mysql://foo:bar@host:3306
+```
+
+##### DOMAINS
+A CSV list of domains used by the given environment:
+
+```dotenv
+DOMAINS=foo.example,bar.example,baz.example
+```
+
+##### SITES
+A CSV list of Drupal "sites" (e.g. "subdomains") used by the given environment:
+
+```dotenv
+SITES=foo,bar,baz,qux
 ```
 
 ##### SOLR_URL
