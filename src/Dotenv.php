@@ -170,7 +170,7 @@ class Dotenv
             return $this->databaseName;
         }
         $result = parse_url($_SERVER['DATABASE_URL'], PHP_URL_PATH);
-        return (FALSE === $result) ? $this->getSiteName() : substr($result, 1);
+        return (FALSE === $result || '/' === $result) ? $this->getSiteName() : substr($result, 1);
     }
 
     function setDatabaseName(string $database)
@@ -225,7 +225,8 @@ class Dotenv
      * @return array
      *   The Drupal-multi-site $sites array, based on environment variables.
      */
-    public function getSites(): array {
+    public function getSites(): array
+    {
         $domains = explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
         $sites = explode(',', $_SERVER['SITES'] ?? 'default');
         foreach ($sites as $site) {
@@ -234,24 +235,6 @@ class Dotenv
             }
         }
         return $sites;
-    }
-
-    /**
-     * Gets the absolute path for the given path.
-     *
-     * @param string $path
-     *   The path to resolve.
-     *
-     * @return string
-     *   The absolute version of the path.
-     */
-    function buildPath(string $path): string
-    {
-        $path = $this->replacePlaceholders($path);
-        if (str_starts_with($path, '/')) {
-            return $path;
-        }
-        return realpath(DRUPAL_ROOT . '/../' . $path);
     }
 
     public function getAppPath(): string
@@ -279,18 +262,4 @@ class Dotenv
         return $this->getProjectPath() . '/drupal/config/sync';
     }
 
-    private function replacePlaceholders(string $string): string
-    {
-        return str_replace([
-            '{{app_path}}',
-            '{{project_path}}',
-            '{{site_name}}',
-            '{{virtual_host}}',
-        ], [
-            $this->getAppPath(),
-            $this->getProjectPath(),
-            $this->getSiteName(),
-            $_SERVER['VIRTUAL_HOST'] ?? NULL,
-        ], $string);
-    }
 }

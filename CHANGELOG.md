@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.8] - 2021-12-14
+
+### Fixed
+
+- Fixed `Dotenv::getDatabaseName` method to use site name if no database specified in `DATABASE_URL`.
+
 ## [0.1.7] - 2021-12-01
 
 ### Changed
@@ -58,7 +64,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.7...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.8...main
+[0.1.7]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.5...0.1.6
 [0.1.5]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.4...0.1.5

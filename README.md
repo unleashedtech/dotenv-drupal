@@ -1,7 +1,11 @@
 # Environment-Based Drupal Settings
 This package extends Symfony's [symfony/dotenv](https://symfony.com/components/Dotenv)
-component to allow streamlined Drupal config via `.env` files. Please refer to the
-component's documentation about how `.env` files are used.
+component to allow streamlined Drupal config via [Environment Variables](https://en.wikipedia.org/wiki/Environment_variable).
+Please refer to the Symfony component's documentation about how `.env` files
+should be used. It is important to note that `.env` files are _ignored_ if the
+`APP_ENV` var has already been set by the server. For performance purposes,
+production environments should ideally rely on pre-configured environment variables,
+rather than environment variable values loaded from `.env` files.
 
 ## Installation
 
@@ -69,7 +73,11 @@ $dotenv = new Dotenv();
 $sites = $dotenv->getSites();
 ```
 
-#### Configuring Drupal via ENV Variables
+#### Installation Conclusion
+That's it! Drupal will now attempt to load essential connection information from
+Environment Variables.
+
+### Configuring Drupal via ENV Variables
 This package will provide many default setting & configuration values based on the
 detected environment. Some of these values can be populated by environment variables.
 
@@ -83,7 +91,7 @@ configuration.
 * [SOLR_URL](#solr_url)
 * More configuration options coming soon!
 
-##### DATABASE_URL
+#### DATABASE_URL
 The default database connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
@@ -96,27 +104,27 @@ For example:
 DATABASE_URL=mysql://foo:bar@host:3306/baz
 ```
 
-For multi-site installations, do _not_ specify a database name in the ENV file(s):
+For multi-site installations, do _not_ specify a database name in the `DATABASE_URL` variable:
 
 ```dotenv
 DATABASE_URL=mysql://foo:bar@host:3306
 ```
 
-##### DOMAINS
+#### DOMAINS
 A CSV list of domains used by the given environment:
 
 ```dotenv
 DOMAINS=foo.example,bar.example,baz.example
 ```
 
-##### SITES
+#### SITES
 A CSV list of Drupal "sites" (e.g. "subdomains") used by the given environment:
 
 ```dotenv
 SITES=foo,bar,baz,qux
 ```
 
-##### SOLR_URL
+#### SOLR_URL
 The default Solr connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
 ```dotenv
@@ -136,8 +144,8 @@ so the shorter DSN can be used.
 
 Streamlined environment-dependent configuration of _one_ Solr core is supported at this time.
 
-##### Supported Placeholders
-* `{{app_path}}`: The path where Drupal is located.
-* `{{project_path}}`: The path where the project is located.
-* `{{site_name}}`: The name of the Drupal site. Defaults to `default`.
-* `{{virtual_host}}`: The value of `$_SERVER['VIRTUAL_HOST']`.
+#### Configuration Conclusion
+With these few Environment Variables, you will be able to configure Drupal in a streamlined
+fashion similar to the way Symfony is configured. Support for integration of many more common
+integrations can be expected soon. Please consider creating a Pull Request with integration(s)
+you would like to see added.
