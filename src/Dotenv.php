@@ -192,14 +192,14 @@ class Dotenv
         $settings['config_sync_directory'] = $this->getConfigSyncPath();
         $settings['file_public_path'] = $this->getPublicFilePath();
         $settings['file_private_path'] = $this->getPrivateFilePath();
-        $settings['container_yamls'] = [
-            $this->getAppPath() . '/sites/' . $envName . '.services.yml',
-        ];
         if (isset($_SERVER['HASH_SALT'])) {
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
         switch ($envName) {
             case 'dev':
+                $settings['container_yamls'] = [
+                    $this->getAppPath() . '/sites/development.services.yml',
+                ];
                 $settings['cache']['bins'] = [
                     'render' => 'cache.backend.null',
                     'page' => 'cache.backend.null',
@@ -214,6 +214,12 @@ class Dotenv
                 }
                 $settings['skip_permissions_hardening'] = TRUE;
                 $settings['update_free_access'] = FALSE;
+                break;
+
+            default:
+                $settings['container_yamls'] = [
+                    $this->getAppPath() . '/sites/' . $envName . '.services.yml',
+                ];
         }
         $this->decorate($settings, 'settings');
         return $settings;

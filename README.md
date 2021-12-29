@@ -146,6 +146,6 @@ Streamlined environment-dependent configuration of _one_ Solr core is supported 
 
 #### Configuration Conclusion
 With these few Environment Variables, you will be able to configure Drupal in a streamlined
-fashion similar to the way Symfony is configured. Support for integration of many more common
-integrations can be expected soon. Please consider creating a Pull Request with integration(s)
-you would like to see added.
+fashion similar to the way Symfony is configured. Support for many more common Drupal features
+can be expected soon. Please consider creating a Pull Request with features you would like to
+this package to support.
