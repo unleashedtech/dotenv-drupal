@@ -4,6 +4,17 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.10] - 2022-01-04
+
+### Changed
+
+- Disallowed access to `default` site in a multi-site install by default.
+- Added support for `$database` variable alteration.
+- Added support for `FILE_PUBLIC_PATH` environment variable.
+- Added support for `FILE_PRIVATE_PATH` environment variable.
+- Added support for `FILE_TEMP_PATH` environment variable.
+- Added support for `CONFIG_SYNC_PATH` environment variable.
+
 ## [0.1.9] - 2021-12-29
 
 ### Fixed
@@ -70,7 +81,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.9...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.10...main
+[0.1.10]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.9...0.1.10
 [0.1.9]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.8...0.1.9
 [0.1.8]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.7...0.1.8
 [0.1.7]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.6...0.1.7

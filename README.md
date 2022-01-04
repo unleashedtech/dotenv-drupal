@@ -28,13 +28,24 @@ $databases = $dotenv->getDatabases();
 $settings = $dotenv->getSettings();
 ```
 
-##### Multi-Site Drupal
-Many multi-site installations leave the `default` site unused. If this is the
-case, you can use the `default` settings file for base configuration in the
-`settings.php` file for each site.
+##### Conditional Logic
+If conditional logic is required for a given site, such logic is still supported.
+This package will auto-load various `settings.{{environment}}.php`,
+`config.{{environment}}.php` or `databases.{{environment}}.php` files, if they exist.
+For instance, if you need to set a database prefix for staging, you can create
+`databases.staging.php`:
 
-In your relevant environment file(s), leave the "database" (e.g. "path")
-empty to allow automatic database name selection based on the site name.
+```php
+<?php
+$databases['default']['default']['prefix'] = 'foo_';
+```
+
+Each included file only has the related variable in scope
+(e.g. `config.dev.php` only has `$config` in scope).
+
+##### Multi-Site Drupal
+You can use the `default` settings file to provide base configuration for
+a multi-site install:
 
 ```php
 <?php
@@ -56,9 +67,20 @@ $dotenv->setDatabaseName('foo');
 require __DIR__ . '/../default/settings.php';
 ```
 
-If conditional logic is required for a given site, such logic is still supported.
-This package will auto-load various `settings.{{environment}}.php` or
-`config.{{environment}}.php` files, if they exist.
+###### Using the Multi-Site Default Site
+If you need to use the `default` site as part of your multi-site install,
+you can allow it by calling the `DotEnv::setMultiSiteDefaultSiteAllowed` method
+in `default/settings.php`:
+
+```php
+<?php
+use UnleashedTech\Drupal\Dotenv\Dotenv;
+$dotenv = $dotenv ?? new Dotenv();
+$dotenv->setMultiSiteDefaultSiteAllowed();
+$config = $dotenv->getConfig();
+$databases = $dotenv->getDatabases();
+$settings = $dotenv->getSettings();
+```
 
 ###### Sites Files
 This package also provides functionality to configure Drupal's `$sites` variable
@@ -86,6 +108,10 @@ For production environments, environment variables should ideally be defined via
 configuration.
 
 * [DATABASE_URL](#database_url)
+* [FILE_PUBLIC_PATH](#file_public_path)
+* [FILE_PRIVATE_PATH](#file_private_path)
+* [FILE_TEMP_PATH](#file_temp_path)
+* [CONFIG_SYNC_PATH](#config_sync_path)
 * [DOMAINS](#domains)
 * [SITES](#sites)
 * [SOLR_URL](#solr_url)
@@ -108,6 +134,36 @@ For multi-site installations, do _not_ specify a database name in the `DATABASE_
 
 ```dotenv
 DATABASE_URL=mysql://foo:bar@host:3306
+```
+
+#### FILE_PUBLIC_PATH
+Allows you to override the default `$settings['file_public_path']` value:
+
+```dotenv
+FILE_PUBLIC_PATH=sites/all/files
+```
+
+Drupal expects this path to be _relative_ to `DRUPAL_ROOT`.
+
+#### FILE_PRIVATE_PATH
+Allows you to override the default `$settings['file_private_path']` value:
+
+```dotenv
+FILE_PRIVATE_PATH=/private
+```
+
+#### FILE_TEMP_PATH
+Allows you to override the default `$settings['file_temp_path']` value:
+
+```dotenv
+FILE_TEMP_PATH=/tmp
+```
+
+#### CONFIG_SYNC_PATH
+Allows you to override the default `$settings['config_sync_path']` value:
+
+```dotenv
+CONFIG_SYNC_PATH=/sync
 ```
 
 #### DOMAINS

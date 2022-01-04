@@ -21,6 +21,11 @@ class Dotenv
     private string $siteName = 'default';
 
     /**
+     * @var bool Whether the default site is allowed in a multi-site configuration.
+     */
+    private bool $isMultiSiteDefaultSiteAllowed = FALSE;
+
+    /**
      * The class constructor.
      */
     public function __construct()
@@ -71,18 +76,32 @@ class Dotenv
     }
 
     /**
-     * Decorates the given data with data of the same type defined in PHP files.
+     * Alters the given data with data of the same type defined in PHP files.
      *
      * @param $data
+     *   The data to alter.
      * @param $type
+     *   The type of data being altered (e.g. settings, config, databases).
      */
-    private function decorate(&$data, $type): void
+    private function alter(&$data, $type): void
     {
         $$type = &$data;
-        $file = DRUPAL_ROOT . '/sites/' . $this->getSiteName() . '/' .
+
+        // Allow alteration via the `default` directory.
+        $file = DRUPAL_ROOT . '/sites/default/' .
             $type . '.' . $this->getEnvironmentName() . '.php';
         if (file_exists($file)) {
             include $file;
+        }
+
+        // Allow alteration via non-`default` directories.
+        $siteName = $this->getSiteName();
+        if ($siteName !== 'default') {
+            $file = DRUPAL_ROOT . '/sites/' . $siteName . '/' .
+                $type . '.' . $this->getEnvironmentName() . '.php';
+            if (file_exists($file)) {
+                include $file;
+            }
         }
     }
 
@@ -139,14 +158,14 @@ class Dotenv
                 ];
                 break;
         }
-        $this->decorate($config, 'config');
+        $this->alter($config, 'config');
         return $config;
     }
 
     public function getDatabases(): array
     {
         $db_url = parse_url($_SERVER['DATABASE_URL']);
-        return [
+        $databases = [
             'default' =>
                 [
                     'default' =>
@@ -162,20 +181,45 @@ class Dotenv
                         ],
                 ],
         ];
+        $this->alter($databases, 'databases');
+        return $databases;
     }
 
-    public function getDatabaseName(): ?string
+    public function getDatabaseName(): string
     {
         if (isset($this->databaseName)) {
             return $this->databaseName;
         }
         $result = parse_url($_SERVER['DATABASE_URL'], PHP_URL_PATH);
-        return (FALSE === $result || '/' === $result) ? $this->getSiteName() : substr($result, 1);
+        if (NULL === $result || trim($result) === '/') {
+            // Multi-site configuration detected. Use the site name.
+            $result = $this->getSiteName();
+            if ($result === 'default' && !$this->isMultiSiteDefaultSiteAllowed()) {
+                header("HTTP/1.1 401 Unauthorized");
+                die('Unauthorized');
+            }
+        } else {
+            $result = substr($result, 1);
+        }
+        if (NULL === $result || preg_replace('/[^a-z0-9_]/', '', $result) === '') {
+            throw new \UnexpectedValueException('Database name could not be computed.');
+        }
+        return $result;
     }
 
-    function setDatabaseName(string $database)
+    public function setDatabaseName(string $database): void
     {
         $this->databaseName = $database;
+    }
+
+    public function isMultiSiteDefaultSiteAllowed(): bool
+    {
+        return $this->isMultiSiteDefaultSiteAllowed;
+    }
+
+    public function setMultiSiteDefaultSiteAllowed(bool $allowed = TRUE): void
+    {
+        $this->isMultiSiteDefaultSiteAllowed = $allowed;
     }
 
     public function getSettings(): array
@@ -192,6 +236,7 @@ class Dotenv
         $settings['config_sync_directory'] = $this->getConfigSyncPath();
         $settings['file_public_path'] = $this->getPublicFilePath();
         $settings['file_private_path'] = $this->getPrivateFilePath();
+        $settings['file_temp_path'] = $this->getTemporaryFilePath();
         if (isset($_SERVER['HASH_SALT'])) {
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
@@ -221,7 +266,7 @@ class Dotenv
                     $this->getAppPath() . '/sites/' . $envName . '.services.yml',
                 ];
         }
-        $this->decorate($settings, 'settings');
+        $this->alter($settings, 'settings');
         return $settings;
     }
 
@@ -253,19 +298,24 @@ class Dotenv
         return dirname(DRUPAL_ROOT, 1);
     }
 
-    public function getPrivateFilePath(): string
-    {
-        return dirname(DRUPAL_ROOT, 1);
-    }
-
     public function getPublicFilePath(): string
     {
-        return 'sites/' . $this->getSiteName() . '/files';
+        return $_SERVER['FILE_PUBLIC_PATH'] ?? 'sites/' . $this->getSiteName() . '/files';
+    }
+
+    public function getPrivateFilePath(): string
+    {
+        return $_SERVER['FILE_PRIVATE_PATH'] ?? $this->getProjectPath() . '/drupal/private_files';
+    }
+
+    public function getTemporaryFilePath(): string
+    {
+        return $_SERVER['FILE_TEMP_PATH'] ?? $this->getProjectPath() . '/drupal/temporary_files';
     }
 
     public function getConfigSyncPath(): string
     {
-        return $this->getProjectPath() . '/drupal/config/sync';
+        return $_SERVER['CONFIG_SYNC_PATH'] ?? $this->getProjectPath() . '/drupal/config/sync';
     }
 
 }
