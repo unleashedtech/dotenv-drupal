@@ -151,6 +151,7 @@ class Dotenv
                 break;
 
             case 'prod':
+            case 'production':
                 $config['environment_indicator.indicator'] = [
                     'name' => 'Production',
                     'fg_color' => '#ffb6b6',
@@ -195,8 +196,12 @@ class Dotenv
             // Multi-site configuration detected. Use the site name.
             $result = $this->getSiteName();
             if ($result === 'default' && !$this->isMultiSiteDefaultSiteAllowed()) {
-                header("HTTP/1.1 401 Unauthorized");
-                die('Unauthorized');
+                if (PHP_SAPI === 'cli') {
+                    throw new \Exception('The "default" site in this multi-site install is not allowed. Please run something like `drush -l {{site}}` instead.');
+                } else {
+                    header("HTTP/1.1 401 Unauthorized");
+                    die('Unauthorized');
+                }
             }
         } else {
             $result = substr($result, 1);
