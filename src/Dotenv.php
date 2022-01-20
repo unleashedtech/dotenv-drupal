@@ -112,19 +112,16 @@ class Dotenv
     public function getConfig(): array
     {
         $config = [];
-        if (isset($_SERVER['SOLR_URL'])) {
-            $parts = parse_url($_SERVER['SOLR_URL']);
-            $name = $parts['fragment'] ?? 'default';
-            $config['search_api.server.' . $name]['backend_config']['connector_config'] = [
-                'scheme' => $parts['scheme'] ?? 'http',
-                'host' => $parts['host'] ?? 'localhost',
-                'port' => $parts['port'] ?? 8983,
-                'path' => $parts['path'] ?? '/',
-                'core' => $parts['user'] ?? 'default',
-            ];
+
+        // Default to having shield enabled.
+        if (isset($_SERVER['SHIELD'])) {
+            $config['shield.settings']['shield_enable'] = (bool) $_SERVER['SHIELD'];
         }
+
+        // Apply configuration based on environment name.
         switch ($this->getEnvironmentName()) {
             case 'dev':
+                $config['shield.settings']['shield_enable'] = FALSE;
                 $config['config_split.config_split.local']['status'] = TRUE;
                 $config['environment_indicator.indicator'] = [
                     'name' => 'Development',
@@ -159,6 +156,33 @@ class Dotenv
                 ];
                 break;
         }
+
+        // Configure Shield if enabled.
+        if ($config['shield.settings']['shield_enable']) {
+            if (isset($_SERVER['SHIELD_USER'])) {
+                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USER'];
+            }
+            if (isset($_SERVER['SHIELD_PASSWORD'])) {
+                $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];
+            }
+            if (isset($_SERVER['SHIELD_MESSAGE'])) {
+                $config['shield.settings']['print'] = $_SERVER['SHIELD_MESSAGE'];
+            }
+        }
+
+        // Configure Solr.
+        if (isset($_SERVER['SOLR_URL'])) {
+            $parts = parse_url($_SERVER['SOLR_URL']);
+            $name = $parts['fragment'] ?? 'default';
+            $config['search_api.server.' . $name]['backend_config']['connector_config'] = [
+                'scheme' => $parts['scheme'] ?? 'http',
+                'host' => $parts['host'] ?? 'localhost',
+                'port' => $parts['port'] ?? 8983,
+                'path' => $parts['path'] ?? '/',
+                'core' => $parts['user'] ?? 'default',
+            ];
+        }
+
         $this->alter($config, 'config');
         return $config;
     }

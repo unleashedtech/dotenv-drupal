@@ -4,9 +4,16 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.12] - 2022-01-20
+
+### Changed
+
+- Updating Dotenv::getConfig to enable Shield by default.
+
 ## [0.1.11] - 2022-01-07
 
 ### Changed
+
 - Updating Dotenv::getConfig to support environments with full "production" name.
 - Updating Dotenv::getDatabaseName to provide helpful output in Drush context for multi-site config with dis-allowed default site.
 
@@ -87,8 +94,9 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.11...main
-[0.1.11]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.9...0.1.11
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.12...main
+[0.1.12]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.11...0.1.12
+[0.1.11]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.10...0.1.11
 [0.1.10]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.9...0.1.10
 [0.1.9]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.8...0.1.9
 [0.1.8]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.7...0.1.8

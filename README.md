@@ -113,6 +113,10 @@ configuration.
 * [FILE_TEMP_PATH](#file_temp_path)
 * [CONFIG_SYNC_PATH](#config_sync_path)
 * [DOMAINS](#domains)
+* [SHIELD](#shield)
+* [SHIELD_USERNAME](#shield_username)
+* [SHIELD_PASSWORD](#shield_password)
+* [SHIELD_MESSAGE](#shield_message)
 * [SITES](#sites)
 * [SOLR_URL](#solr_url)
 * More configuration options coming soon!
@@ -172,6 +176,18 @@ A CSV list of domains used by the given environment:
 ```dotenv
 DOMAINS=foo.example,bar.example,baz.example
 ```
+
+#### SHIELD
+A boolean allowing the enabling/disabling of Shield module auth functionality.
+
+##### SHIELD_USERNAME
+The username for Shield to require if enabled.
+
+##### SHIELD_PASSWORD
+The password for Shield to require if enabled.
+
+##### SHIELD_MESSAGE
+The _public_ message Shield should show in the auth prompt if enabled.
 
 #### SITES
 A CSV list of Drupal "sites" (e.g. "subdomains") used by the given environment:
