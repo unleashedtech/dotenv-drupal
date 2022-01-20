@@ -181,10 +181,10 @@ DOMAINS=foo.example,bar.example,baz.example
 A boolean allowing the enabling/disabling of Shield module auth functionality.
 
 ##### SHIELD_USERNAME
-The username for Shield to require if enabled.
+The username for Shield to require, if enabled.
 
 ##### SHIELD_PASSWORD
-The password for Shield to require if enabled.
+The password for Shield to require, if enabled.
 
 ##### SHIELD_MESSAGE
 The _public_ message Shield should show in the auth prompt if enabled.

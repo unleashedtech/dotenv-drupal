@@ -117,6 +117,9 @@ class Dotenv
         if (isset($_SERVER['SHIELD'])) {
             $config['shield.settings']['shield_enable'] = (bool) $_SERVER['SHIELD'];
         }
+        else {
+            $config['shield.settings']['shield_enable'] = TRUE;
+        }
 
         // Apply configuration based on environment name.
         switch ($this->getEnvironmentName()) {
@@ -159,8 +162,8 @@ class Dotenv
 
         // Configure Shield if enabled.
         if ($config['shield.settings']['shield_enable']) {
-            if (isset($_SERVER['SHIELD_USER'])) {
-                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USER'];
+            if (isset($_SERVER['SHIELD_USERNAME'])) {
+                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USERNAME'];
             }
             if (isset($_SERVER['SHIELD_PASSWORD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];

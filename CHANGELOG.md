@@ -4,6 +4,13 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.13] - 2022-01-20
+
+### Fixed
+
+- Updated Dotenv::getConfig to indeed enable Shield by default.
+- Updated Dotenv::getConfig to check for `SHIELD_USERNAME` instead of `SHIELD_USER`.
+
 ## [0.1.12] - 2022-01-20
 
 ### Changed
@@ -94,7 +101,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.12...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.13...main
+[0.1.12]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.12...0.1.13
 [0.1.12]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.11...0.1.12
 [0.1.11]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.10...0.1.11
 [0.1.10]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.9...0.1.10
