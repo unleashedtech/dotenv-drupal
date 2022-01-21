@@ -119,6 +119,7 @@ configuration.
 * [SHIELD_MESSAGE](#shield_message)
 * [SITES](#sites)
 * [SOLR_URL](#solr_url)
+* [TRUSTED_HOST_PATTERNS](#trusted_host_patterns)
 * More configuration options coming soon!
 
 #### DATABASE_URL
@@ -215,6 +216,9 @@ name for the connection. Consider revising Solr core & Drupal Solr server machin
 so the shorter DSN can be used.
 
 Streamlined environment-dependent configuration of _one_ Solr core is supported at this time.
+
+#### TRUSTED_HOST_PATTERNS
+A CSV list of patterns specifying [trusted hosts](https://www.drupal.org/docs/installing-drupal/trusted-host-settings#s-protecting-in-drupal-8).
 
 #### Configuration Conclusion
 With these few Environment Variables, you will be able to configure Drupal in a streamlined

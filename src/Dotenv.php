@@ -115,9 +115,8 @@ class Dotenv
 
         // Default to having shield enabled.
         if (isset($_SERVER['SHIELD'])) {
-            $config['shield.settings']['shield_enable'] = (bool) $_SERVER['SHIELD'];
-        }
-        else {
+            $config['shield.settings']['shield_enable'] = (bool)$_SERVER['SHIELD'];
+        } else {
             $config['shield.settings']['shield_enable'] = TRUE;
         }
 
@@ -272,6 +271,10 @@ class Dotenv
         if (isset($_SERVER['HASH_SALT'])) {
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
+        if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
+            $settings['trusted_host_patterns'] = explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']);
+        }
+
         switch ($envName) {
             case 'dev':
                 $settings['container_yamls'] = [
@@ -285,9 +288,7 @@ class Dotenv
                 $settings['hash_salt'] = 'foo';
                 $settings['rebuild_access'] = FALSE;
                 if (isset($_SERVER['VIRTUAL_HOST'])) {
-                    $settings['trusted_host_patterns'] = [
-                        $_SERVER['VIRTUAL_HOST'],
-                    ];
+                    $settings['trusted_host_patterns'][] = $_SERVER['VIRTUAL_HOST'];
                 }
                 $settings['skip_permissions_hardening'] = TRUE;
                 $settings['update_free_access'] = FALSE;
