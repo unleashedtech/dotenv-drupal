@@ -88,17 +88,17 @@ class Dotenv
         $$type = &$data;
 
         // Allow alteration via the `default` directory.
-        $file = DRUPAL_ROOT . '/sites/default/' .
-            $type . '.' . $this->getEnvironmentName() . '.php';
-        if (file_exists($file)) {
-            include $file;
-        }
+        $files[] = DRUPAL_ROOT . '/sites/default/' . $type . '.' . $this->getEnvironmentName() . '.php';
+        $files[] = DRUPAL_ROOT . '/sites/default/' . $type . '.local.php';
 
         // Allow alteration via non-`default` directories.
         $siteName = $this->getSiteName();
         if ($siteName !== 'default') {
-            $file = DRUPAL_ROOT . '/sites/' . $siteName . '/' .
-                $type . '.' . $this->getEnvironmentName() . '.php';
+            $files[] = DRUPAL_ROOT . '/sites/' . $siteName . '/' . $type . '.' . $this->getEnvironmentName() . '.php';
+            $files[] = DRUPAL_ROOT . '/sites/' . $siteName . '/' . $type . '.local.php';
+        }
+
+        foreach ($files as $file) {
             if (file_exists($file)) {
                 include $file;
             }
@@ -157,6 +157,16 @@ class Dotenv
                     'bg_color' => '#870000',
                 ];
                 break;
+        }
+
+        // Configure Mailgun.
+        if (isset($_SERVER['MAILGUN_URL'])) {
+            $parts = parse_url($_SERVER['MAILGUN_URL']);
+            $config['mailgun.settings']['api_endpoint'] = vsprintf('%s://%s', [
+                'scheme' => $parts['scheme'] ?? 'https',
+                'host' => $parts['host'] ?? 'api.mailgun.net',
+            ]);
+            $config['mailgun.settings']['api_key'] = $parts['name'] ?? 'key-1234567890abcdefghijklmnopqrstu';
         }
 
         // Configure Shield if enabled.

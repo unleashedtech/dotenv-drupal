@@ -113,6 +113,7 @@ configuration.
 * [FILE_TEMP_PATH](#file_temp_path)
 * [CONFIG_SYNC_PATH](#config_sync_path)
 * [DOMAINS](#domains)
+* [MAILGUN_URL](#mailgun_url)
 * [SHIELD](#shield)
 * [SHIELD_USERNAME](#shield_username)
 * [SHIELD_PASSWORD](#shield_password)
@@ -178,8 +179,25 @@ A CSV list of domains used by the given environment:
 DOMAINS=foo.example,bar.example,baz.example
 ```
 
+#### MAILGUN_URL
+The information Drupal should use to authenticate with the Mailgun API.
+
+The "user" in the [DSN](https://en.wikipedia.org/wiki/Data_source_name) is the API key.
+
+##### US URL Example
+```dotenv
+MAILGUN_URL=https://key-1234567890abcdefghijklmnopqrstu@api.mailgun.net
+```
+
+##### EU URL Example
+```dotenv
+MAILGUN_URL=https://key-1234567890abcdefghijklmnopqrstu@api.eu.mailgun.net
+```
+
 #### SHIELD
 A boolean allowing the enabling/disabling of Shield module auth functionality.
+
+Note: _Make sure the "Enable Shield" checkbox is checked in Drupal & that config is committed._
 
 ##### SHIELD_USERNAME
 The username for Shield to require, if enabled.
