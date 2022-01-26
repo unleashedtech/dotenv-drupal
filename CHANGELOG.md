@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.1.16] - 2022-01-26
+
+### Fixed
+
+- Resolved `MAILGUN_URL` API KEY "user" bug.
+
 ## [0.1.15] - 2022-01-25
 
 ### Changed
@@ -114,7 +120,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...main
+[0.1.16]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...0.1.16
 [0.1.15]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.14...0.1.15
 [0.1.14]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.13...0.1.14
 [0.1.13]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.12...0.1.13

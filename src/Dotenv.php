@@ -166,7 +166,7 @@ class Dotenv
                 'scheme' => $parts['scheme'] ?? 'https',
                 'host' => $parts['host'] ?? 'api.mailgun.net',
             ]);
-            $config['mailgun.settings']['api_key'] = $parts['name'] ?? 'key-1234567890abcdefghijklmnopqrstu';
+            $config['mailgun.settings']['api_key'] = $parts['user'] ?? 'key-1234567890abcdefghijklmnopqrstu';
         }
 
         // Configure Shield if enabled.
