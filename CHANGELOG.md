@@ -13,6 +13,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 - Added initial set of unit tests.
 - Cleaned up code style.
 
+## [0.1.17] - 2022-01-27
+
 ### Fixed
 
 - Removed additional "0" site in the array returned from `Dotenv::getSites`.
@@ -134,7 +136,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 **Initial release!**
 
 [unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/1.0.0...main
-[1.0.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...1.0.0
+[1.0.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...1.0.0
+[0.1.17]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...0.1.17
 [0.1.16]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...0.1.16
 [0.1.15]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.14...0.1.15
 [0.1.14]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.13...0.1.14
