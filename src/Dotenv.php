@@ -321,13 +321,15 @@ class Dotenv
      */
     public function getSites(): array
     {
-        $domains = explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
-        $sites = explode(',', $_SERVER['SITES'] ?? 'default');
-        foreach ($sites as $site) {
+        $domains   = \explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
+        $siteNames = \explode(',', $_SERVER['SITES'] ?? 'default');
+        $sites     = [];
+        foreach ($siteNames as $siteName) {
             foreach ($domains as $domain) {
-                $sites[$site . '.' . $domain] = $site;
+                $sites[$siteName . '.' . $domain] = $siteName;
             }
         }
+
         return $sites;
     }
 
