@@ -195,15 +195,23 @@ MAILGUN_URL=https://key-1234567890abcdefghijklmnopqrstu@api.eu.mailgun.net
 ```
 
 #### SHIELD
-A boolean allowing the enabling/disabling of Shield module auth functionality.
+A string allowing the enabling/disabling of Shield module auth functionality.
+
+If empty, shield will not be enabled.
+
+If filled, the string will be used as username & password by default.
 
 Note: _Make sure the "Enable Shield" checkbox is checked in Drupal & that config is committed._
 
 ##### SHIELD_USERNAME
 The username for Shield to require, if enabled.
 
+This package will use the value of `SHIELD` as username, by default.
+
 ##### SHIELD_PASSWORD
 The password for Shield to require, if enabled.
+
+This package will use the value of `SHIELD` as password, by default.
 
 ##### SHIELD_MESSAGE
 The _public_ message Shield should show in the auth prompt if enabled.
@@ -236,7 +244,11 @@ so the shorter DSN can be used.
 Streamlined environment-dependent configuration of _one_ Solr core is supported at this time.
 
 #### TRUSTED_HOST_PATTERNS
-A CSV list of patterns specifying [trusted hosts](https://www.drupal.org/docs/installing-drupal/trusted-host-settings#s-protecting-in-drupal-8).
+Optional. A CSV list of patterns specifying [trusted hosts](https://www.drupal.org/docs/installing-drupal/trusted-host-settings#s-protecting-in-drupal-8). If this
+variable is not set, this package will populate Drupal's `trusted_host_patterns` array
+based on the value of [DOMAINS](#domains).
+
+Start (`^`) & end (`$`) characters are added to every pattern, by default.
 
 #### Configuration Conclusion
 With these few Environment Variables, you will be able to configure Drupal in a streamlined
