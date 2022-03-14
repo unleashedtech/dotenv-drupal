@@ -13,6 +13,15 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 - Added initial set of unit tests.
 - Cleaned up code style.
 
+## [0.2.0] - 2022-03-14
+
+### Changed
+
+- *Updated `Dotenv::getSettings` to prepend & append start/end chars to each pattern.*
+- Updated `Dotenv::getSettings` to construct `trusted_host_patterns` based on `DOMAINS` if
+  `TRUSTED_HOST_PATTERNS` environment variable is not set.
+- Updated `SHIELD` variable to serve as the default username/password for the prompt if filled.
+
 ## [0.1.17] - 2022-01-27
 
 ### Fixed
@@ -136,7 +145,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 **Initial release!**
 
 [unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/1.0.0...main
-[1.0.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...1.0.0
+[1.0.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...1.0.0
+[0.2.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...0.2.0
 [0.1.17]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...0.1.17
 [0.1.16]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...0.1.16
 [0.1.15]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.14...0.1.15

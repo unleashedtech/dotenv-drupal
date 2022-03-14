@@ -174,9 +174,15 @@ class Dotenv
             if (isset($_SERVER['SHIELD_USERNAME'])) {
                 $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USERNAME'];
             }
+            else {
+                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD'];
+            }
 
             if (isset($_SERVER['SHIELD_PASSWORD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];
+            }
+            else {
+                $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD'];
             }
 
             if (isset($_SERVER['SHIELD_MESSAGE'])) {
@@ -303,7 +309,14 @@ class Dotenv
         }
 
         if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
-            $settings['trusted_host_patterns'] = \explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']);
+            foreach (explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
+                $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
+            }
+        }
+        else {
+            foreach ($this->getDomains() as $domain) {
+                $settings['trusted_host_patterns'][] = '^' . str_replace('.', '\.', $domain) . '$';
+            }
         }
 
         switch ($envName) {
@@ -338,6 +351,16 @@ class Dotenv
     }
 
     /**
+     * Gets the domains for this environment.
+     *
+     * @return array
+     *   The domains for this environment.
+     */
+    public function getDomains(): array {
+        return \explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
+    }
+
+    /**
      * Gets the Drupal-multi-site $sites array, based on environment variables.
      *
      * @return \array[][]
@@ -345,7 +368,7 @@ class Dotenv
      */
     public function getSites(): array
     {
-        $domains   = \explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
+        $domains   = $this->getDomains();
         $siteNames = \explode(',', $_SERVER['SITES'] ?? 'default');
         $sites     = [];
         foreach ($siteNames as $siteName) {

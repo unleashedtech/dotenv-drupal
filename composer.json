@@ -13,7 +13,7 @@
         "psr-4": { "UnleashedTech\\Drupal\\Dotenv\\": "src/" }
     },
     "extra": {
-        "branch-alias": { "dev-main": "2.0.x-dev" }
+        "branch-alias": { "dev-main": "1.0.x-dev" }
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
