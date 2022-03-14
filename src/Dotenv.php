@@ -173,16 +173,16 @@ class Dotenv
         if ($config['shield.settings']['shield_enable']) {
             if (isset($_SERVER['SHIELD_USERNAME'])) {
                 $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USERNAME'];
-            }
-            else {
+            } elseif (isset($_SERVER['SHIELD'])) {
                 $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD'];
             }
+
             if (isset($_SERVER['SHIELD_PASSWORD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];
-            }
-            else {
+            } elseif (isset($_SERVER['SHIELD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD'];
             }
+
             if (isset($_SERVER['SHIELD_MESSAGE'])) {
                 $config['shield.settings']['print'] = $_SERVER['SHIELD_MESSAGE'];
             }
