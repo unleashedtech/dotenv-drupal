@@ -98,6 +98,10 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/default/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'trusted_host_patterns' =>
+                [
+                    '^default\.example$',
+                ],
             'container_yamls' =>
                 [
                     0 => './tests/sites/development.services.yml',
@@ -199,6 +203,10 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/alt/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'trusted_host_patterns' =>
+                [
+                    '^default\.example$',
+                ],
             'container_yamls' =>
                 [
                     0 => './tests/sites/development.services.yml',
@@ -312,6 +320,10 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/default/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'trusted_host_patterns' =>
+                [
+                    '^default\.example$',
+                ],
             'container_yamls' =>
                 [
                     0 => './tests/sites/foo.services.yml',

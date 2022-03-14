@@ -173,15 +173,13 @@ class Dotenv
         if ($config['shield.settings']['shield_enable']) {
             if (isset($_SERVER['SHIELD_USERNAME'])) {
                 $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USERNAME'];
-            }
-            else {
+            } elseif (isset($_SERVER['SHIELD'])) {
                 $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD'];
             }
 
             if (isset($_SERVER['SHIELD_PASSWORD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];
-            }
-            else {
+            } elseif (isset($_SERVER['SHIELD'])) {
                 $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD'];
             }
 
@@ -309,13 +307,12 @@ class Dotenv
         }
 
         if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
-            foreach (explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
+            foreach (\explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
                 $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
             }
-        }
-        else {
+        } else {
             foreach ($this->getDomains() as $domain) {
-                $settings['trusted_host_patterns'][] = '^' . str_replace('.', '\.', $domain) . '$';
+                $settings['trusted_host_patterns'][] = '^' . \str_replace('.', '\.', $domain) . '$';
             }
         }
 
@@ -353,10 +350,11 @@ class Dotenv
     /**
      * Gets the domains for this environment.
      *
-     * @return array
+     * @return string[]
      *   The domains for this environment.
      */
-    public function getDomains(): array {
+    public function getDomains(): array
+    {
         return \explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
     }
 
