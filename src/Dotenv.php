@@ -287,6 +287,9 @@ class Dotenv
         if (isset($_SERVER['HASH_SALT'])) {
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
+
+        // Configure trusted host patterns.
+        $settings['trusted_host_patterns'] = [];
         if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
             foreach (explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
                 $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
@@ -295,6 +298,12 @@ class Dotenv
         else {
             foreach ($this->getDomains() as $domain) {
                 $settings['trusted_host_patterns'][] = '^' . str_replace('.', '\.', $domain) . '$';
+                foreach ($this->getSites() as $site) {
+                    $settings['trusted_host_patterns'][] = \vsprintf('^%s\.%s$', [
+                        $site === 'default' ? 'www' : $site,
+                        str_replace('.', '\.', $domain),
+                    ]);
+                }
             }
         }
 
