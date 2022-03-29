@@ -244,11 +244,30 @@ so the shorter DSN can be used.
 Streamlined environment-dependent configuration of _one_ Solr core is supported at this time.
 
 #### TRUSTED_HOST_PATTERNS
-Optional. A CSV list of patterns specifying [trusted hosts](https://www.drupal.org/docs/installing-drupal/trusted-host-settings#s-protecting-in-drupal-8). If this
-variable is not set, this package will populate Drupal's `trusted_host_patterns` array
-based on the value of [DOMAINS](#domains).
+Optional. A CSV list of patterns specifying [trusted hosts](https://www.drupal.org/docs/installing-drupal/trusted-host-settings#s-protecting-in-drupal-8).
 
 Start (`^`) & end (`$`) characters are added to every pattern, by default.
+
+##### Fallback Functionality
+If the `TRUSTED_HOST_PATTERNS` variable is _not_ set, this package will populate
+Drupal's `trusted_host_patterns` array based on the values of [DOMAINS](#domains)
+& [SITES](#sites) variables.
+
+###### Examples
+If you have `DOMAINS` set to `foo.example,bar.example`, the Drupal `trusted_host_patterns`
+settings array would have the following values:
+
+* `^foo\.example$`
+* `^www\.foo\.example$`
+* `^bar\.example$`
+* `^www\.bar\.example$`
+
+If you have `DOMAINS` set to `foo.example` & `SITES` set to `bar,baz,qux`, the
+Drupal `trusted_host_patterns` setting array would have the following values:
+
+* `^bar\.foo\.example$`
+* `^baz\.foo\.example$`
+* `^qux\.foo\.example$`
 
 #### Configuration Conclusion
 With these few Environment Variables, you will be able to configure Drupal in a streamlined
