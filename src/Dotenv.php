@@ -303,16 +303,19 @@ class Dotenv
         }
         else {
             foreach ($this->getDomains() as $domain) {
-                if (!$this->isMultiSite() || $this->isMultiSiteDefaultSiteAllowed()) {
-                    $settings['trusted_host_patterns'][] = '^' . str_replace('.', '\.', $domain) . '$';
+                if (! $this->isMultiSite() || $this->isMultiSiteDefaultSiteAllowed()) {
+                    $settings['trusted_host_patterns'][] = '^' . \str_replace('.', '\.', $domain) . '$';
+                    $settings['trusted_host_patterns'][] = '^www\.' . \str_replace('.', '\.', $domain) . '$';
                 }
+
                 foreach ($this->getSites() as $site) {
-                    if ($site === 'default' && !$this->isMultiSiteDefaultSiteAllowed()) {
+                    if ($site === 'default') {
                         continue;
                     }
+
                     $settings['trusted_host_patterns'][] = \vsprintf('^%s\.%s$', [
-                        $site === 'default' ? 'www' : $site,
-                        str_replace('.', '\.', $domain),
+                        $site,
+                        \str_replace('.', '\.', $domain),
                     ]);
                 }
             }
