@@ -69,18 +69,7 @@ require __DIR__ . '/../default/settings.php';
 
 ###### Using the Multi-Site Default Site
 If you need to use the `default` site as part of your multi-site install,
-you can allow it by calling the `DotEnv::setMultiSiteDefaultSiteAllowed` method
-in `default/settings.php`:
-
-```php
-<?php
-use UnleashedTech\Drupal\Dotenv\Dotenv;
-$dotenv = $dotenv ?? new Dotenv();
-$dotenv->setMultiSiteDefaultSiteAllowed();
-$config = $dotenv->getConfig();
-$databases = $dotenv->getDatabases();
-$settings = $dotenv->getSettings();
-```
+you can allow it by setting [MULTISITE_DEFAULT_SITE_ALLOWED](#multisite_default_site_allowed) to `1`
 
 ###### Sites Files
 This package also provides functionality to configure Drupal's `$sites` variable
@@ -114,6 +103,7 @@ configuration.
 * [CONFIG_SYNC_PATH](#config_sync_path)
 * [DOMAINS](#domains)
 * [MAILGUN_URL](#mailgun_url)
+* [MULTISITE_DEFAULT_SITE_ALLOWED](#multisite_default_site_allowed)
 * [SHIELD](#shield)
 * [SHIELD_USERNAME](#shield_username)
 * [SHIELD_PASSWORD](#shield_password)
@@ -183,6 +173,11 @@ DOMAINS=foo.example,bar.example,baz.example
 The information Drupal should use to authenticate with the Mailgun API.
 
 The "user" in the [DSN](https://en.wikipedia.org/wiki/Data_source_name) is the API key.
+
+#### MULTISITE_DEFAULT_SITE_ALLOWED
+Whether the default site in a multi-site Drupal installation is allowed.
+
+The multisite default site is disallowed, by default.
 
 ##### US URL Example
 ```dotenv

@@ -17,9 +17,6 @@ class Dotenv
     /** @var string The name of the Drupal site being configured. */
     private string $siteName = 'default';
 
-    /** @var bool Whether the default site is allowed in a multi-site configuration. */
-    private bool $isMultiSiteDefaultSiteAllowed = false;
-
     /**
      * The class constructor.
      */
@@ -86,14 +83,15 @@ class Dotenv
         $$type = &$data;
 
         // Allow alteration via the `default` directory.
-        $files[] = DRUPAL_ROOT . '/sites/default/' . $type . '.' . $this->getEnvironmentName() . '.php';
-        $files[] = DRUPAL_ROOT . '/sites/default/' . $type . '.local.php';
+        $appPath = $this->getAppPath();
+        $files[] = $appPath . '/sites/default/' . $type . '.' . $this->getEnvironmentName() . '.php';
+        $files[] = $appPath . '/sites/default/' . $type . '.local.php';
 
         // Allow alteration via non-`default` directories.
         $siteName = $this->getSiteName();
         if ($siteName !== 'default') {
-            $files[] = DRUPAL_ROOT . '/sites/' . $siteName . '/' . $type . '.' . $this->getEnvironmentName() . '.php';
-            $files[] = DRUPAL_ROOT . '/sites/' . $siteName . '/' . $type . '.local.php';
+            $files[] = $appPath . '/sites/' . $siteName . '/' . $type . '.' . $this->getEnvironmentName() . '.php';
+            $files[] = $appPath . '/sites/' . $siteName . '/' . $type . '.local.php';
         }
 
         foreach ($files as $file) {
@@ -271,21 +269,18 @@ class Dotenv
         $this->databaseName = $database;
     }
 
-    public function isMultiSiteDefaultSiteAllowed(): bool
+    public function isMultiSite(): bool
     {
-        return $this->isMultiSiteDefaultSiteAllowed;
+        return \count($this->getSites()) > 1;
     }
 
-    public function setMultiSiteDefaultSiteAllowed(bool $allowed = true): void
+    public function isMultiSiteDefaultSiteAllowed(): bool
     {
-        $this->isMultiSiteDefaultSiteAllowed = $allowed;
+        return (bool) ($_SERVER['MULTISITE_DEFAULT_SITE_ALLOWED'] ?? false);
     }
 
     /**
-     * Gets Drupal settings.
-     *
-     * @return \array[][]
-     *   Drupal settings.
+     * @return string[][]
      */
     public function getSettings(): array
     {
@@ -306,15 +301,7 @@ class Dotenv
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
 
-        if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
-            foreach (\explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
-                $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
-            }
-        } else {
-            foreach ($this->getDomains() as $domain) {
-                $settings['trusted_host_patterns'][] = '^' . \str_replace('.', '\.', $domain) . '$';
-            }
-        }
+        $settings['trusted_host_patterns'] = $this->getTrustedHostPatterns();
 
         switch ($envName) {
             case 'dev':
@@ -348,6 +335,41 @@ class Dotenv
     }
 
     /**
+     * @see https://github.com/unleashedtech/dotenv-drupal/blob/main/README.md#trusted_host_patterns
+     *
+     * @return string[]
+     */
+    public function getTrustedHostPatterns(): array
+    {
+        $trustedHostPatterns = [];
+        if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
+            foreach (\explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
+                $trustedHostPatterns[] = '^' . $pattern . '$';
+            }
+        } else {
+            foreach ($this->getDomains() as $domain) {
+                if (! $this->isMultiSite() || $this->isMultiSiteDefaultSiteAllowed()) {
+                    $trustedHostPatterns[] = '^' . \str_replace('.', '\.', $domain) . '$';
+                    $trustedHostPatterns[] = '^www\.' . \str_replace('.', '\.', $domain) . '$';
+                }
+
+                foreach ($this->getSites() as $site) {
+                    if ($site === 'default') {
+                        continue;
+                    }
+
+                    $trustedHostPatterns[] = \vsprintf('^%s\.%s$', [
+                        $site,
+                        \str_replace('.', '\.', $domain),
+                    ]);
+                }
+            }
+        }
+
+        return $trustedHostPatterns;
+    }
+
+    /**
      * Gets the domains for this environment.
      *
      * @return string[]
@@ -361,7 +383,7 @@ class Dotenv
     /**
      * Gets the Drupal-multi-site $sites array, based on environment variables.
      *
-     * @return \array[][]
+     * @return string[]
      *   The Drupal-multi-site $sites array, based on environment variables.
      */
     public function getSites(): array
@@ -371,7 +393,8 @@ class Dotenv
         $sites     = [];
         foreach ($siteNames as $siteName) {
             foreach ($domains as $domain) {
-                $sites[$siteName . '.' . $domain] = $siteName;
+                $site         = $siteName === 'default' ? $domain : $siteName . '.' . $domain;
+                $sites[$site] = $siteName;
             }
         }
 
@@ -385,7 +408,7 @@ class Dotenv
 
     public function getProjectPath(): string
     {
-        return \dirname(DRUPAL_ROOT, 1);
+        return \dirname($this->getAppPath());
     }
 
     public function getPublicFilePath(): string

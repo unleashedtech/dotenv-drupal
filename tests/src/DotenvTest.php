@@ -16,8 +16,12 @@ final class DotenvTest extends TestCase
 
     public function setUp(): void
     {
-        $_SERVER['APP_ENV']      = 'foo';
-        $_SERVER['DATABASE_URL'] = 'mysql://user:password@host:0/database';
+        $_SERVER['APP_ENV']                        = 'foo';
+        $_SERVER['DATABASE_URL']                   = 'mysql://user:password@host:0/database';
+        $_SERVER['DOMAINS']                        = 'default.example';
+        $_SERVER['HASH_SALT']                      = 'foobarbazqux';
+        $_SERVER['MULTISITE_DEFAULT_SITE_ALLOWED'] = false;
+        $_SERVER['SITES']                          = 'default';
     }
 
     public function testAlterDefaultSiteConfig(): void
@@ -98,9 +102,11 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/default/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'hash_salt' => 'baz',
             'trusted_host_patterns' =>
                 [
                     '^default\.example$',
+                    '^www\.default\.example$',
                 ],
             'container_yamls' =>
                 [
@@ -115,7 +121,6 @@ final class DotenvTest extends TestCase
                             'dynamic_page_cache' => 'cache.backend.null',
                         ],
                 ],
-            'hash_salt' => 'baz',
             'rebuild_access' => true,
             'skip_permissions_hardening' => true,
         ], $dotenv->getSettings());
@@ -203,9 +208,11 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/alt/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'hash_salt' => 'baz',
             'trusted_host_patterns' =>
                 [
                     '^default\.example$',
+                    '^www\.default\.example$',
                 ],
             'container_yamls' =>
                 [
@@ -220,7 +227,6 @@ final class DotenvTest extends TestCase
                             'dynamic_page_cache' => 'cache.backend.null',
                         ],
                 ],
-            'hash_salt' => 'baz',
             'rebuild_access' => true,
             'skip_permissions_hardening' => true,
         ], $dotenv->getSettings());
@@ -236,9 +242,9 @@ final class DotenvTest extends TestCase
     {
         unset($_SERVER['APP_ENV']);
         $dotenv = new Dotenv();
-        $this->expectNotice();
+        $this->expectWarning();
         $dotenv->getEnvironmentName();
-        $this->expectNoticeMessageMatches('/Undefined index: APP_ENV/');
+        $this->expectWarningMessageMatches('/Undefined index: APP_ENV/');
     }
 
     public function testGetAppPath(): void
@@ -320,15 +326,16 @@ final class DotenvTest extends TestCase
             'file_public_path' => 'sites/default/files',
             'file_private_path' => './drupal/private_files',
             'file_temp_path' => './drupal/temporary_files',
+            'hash_salt' => 'baz',
             'trusted_host_patterns' =>
                 [
                     '^default\.example$',
+                    '^www\.default\.example$',
                 ],
             'container_yamls' =>
                 [
                     0 => './tests/sites/foo.services.yml',
                 ],
-            'hash_salt' => 'baz',
         ], $dotenv->getSettings());
     }
 
@@ -336,15 +343,36 @@ final class DotenvTest extends TestCase
     {
         $dotenv = new Dotenv();
         $this->assertSame([
-            'default.default.example' => 'default',
+            'default.example' => 'default',
         ], $dotenv->getSites());
+    }
+
+    public function testGetMultisiteTrustedHostPatterns(): void
+    {
+        $_SERVER['SITES'] = 'site1,site2,site3';
+        $dotenv           = new Dotenv();
+        $this->assertSame([
+            '^site1\.default\.example$',
+            '^site2\.default\.example$',
+            '^site3\.default\.example$',
+        ], $dotenv->getTrustedHostPatterns());
+
+        // Test with default site allowed.
+        $_SERVER['MULTISITE_DEFAULT_SITE_ALLOWED'] = true;
+        $this->assertSame([
+            '^default\.example$',
+            '^www\.default\.example$',
+            '^site1\.default\.example$',
+            '^site2\.default\.example$',
+            '^site3\.default\.example$',
+        ], $dotenv->getTrustedHostPatterns());
     }
 
     public function testGetEnvironmentName(): void
     {
+        $_SERVER['APP_ENV'] = 'qux';
         $dotenv             = new Dotenv();
-        $_SERVER['APP_ENV'] = 'foo';
-        $this->assertSame('foo', $dotenv->getEnvironmentName());
+        $this->assertSame('qux', $dotenv->getEnvironmentName());
     }
 
     public function testGetTemporaryFilePath(): void
@@ -353,10 +381,44 @@ final class DotenvTest extends TestCase
         $this->assertSame('./drupal/temporary_files', $dotenv->getTemporaryFilePath());
     }
 
-    public function testIsDefaultMultiSiteDefaultSiteAllowed(): void
+    public function testIsMultisite(): void
+    {
+        $dotenv = new Dotenv();
+        $this->assertFalse($dotenv->isMultiSite());
+
+        $_SERVER['SITES'] = 'site1,site2,site3';
+        $this->assertTrue($dotenv->isMultiSite());
+    }
+
+    public function testIsMultisiteDefaultSiteAllowed(): void
     {
         $dotenv = new Dotenv();
         $this->assertFalse($dotenv->isMultiSiteDefaultSiteAllowed());
+
+        $_SERVER['MULTISITE_DEFAULT_SITE_ALLOWED'] = true;
+        $this->assertTrue($dotenv->isMultiSiteDefaultSiteAllowed());
+    }
+
+    public function testDomains(): void
+    {
+        $_SERVER['DOMAINS'] = 'foo.example,bar.example,baz.example';
+        $dotenv             = new Dotenv();
+        $this->assertSame($dotenv->getDomains(), [
+            'foo.example',
+            'bar.example',
+            'baz.example',
+        ]);
+    }
+
+    public function testGetMultisiteSites(): void
+    {
+        $_SERVER['SITES'] = 'site1,site2,site3';
+        $dotenv           = new Dotenv();
+        $this->assertSame($dotenv->getSites(), [
+            'site1.default.example' => 'site1',
+            'site2.default.example' => 'site2',
+            'site3.default.example' => 'site3',
+        ]);
     }
 
     public function testSetDatabaseName(): void
@@ -364,13 +426,6 @@ final class DotenvTest extends TestCase
         $dotenv = new Dotenv();
         $dotenv->setDatabaseName('foo');
         $this->assertSame('foo', $dotenv->getDatabaseName());
-    }
-
-    public function testSetIsMultiSiteDefaultSiteAllowed(): void
-    {
-        $dotenv = new Dotenv();
-        $dotenv->setMultiSiteDefaultSiteAllowed();
-        $this->assertTrue($dotenv->isMultiSiteDefaultSiteAllowed());
     }
 
     public function testSetSiteName(): void
