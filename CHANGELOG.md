@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.2.1] - 2022-03-30
+
+### Fixed
+
+- Fixed construction of `trusted_host_patterns` array to support sites defined in the `SITES` constant.
+
 ## [0.2.0] - 2022-03-14
 
 ### Changed
@@ -135,7 +141,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.1...main
+[0.2.1]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...0.2.0
 [0.1.17]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...0.1.17
 [0.1.16]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...0.1.16

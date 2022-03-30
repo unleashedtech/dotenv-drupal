@@ -259,6 +259,11 @@ class Dotenv
         $this->databaseName = $database;
     }
 
+    public function isMultiSite(): bool
+    {
+        return count($this->getSites()) > 1;
+    }
+
     public function isMultiSiteDefaultSiteAllowed(): bool
     {
         return $this->isMultiSiteDefaultSiteAllowed;
@@ -287,6 +292,10 @@ class Dotenv
         if (isset($_SERVER['HASH_SALT'])) {
             $settings['hash_salt'] = $_SERVER['HASH_SALT'];
         }
+
+        // Configure trusted host patterns.
+        // @see https://github.com/unleashedtech/dotenv-drupal/blob/main/README.md#trusted_host_patterns
+        $settings['trusted_host_patterns'] = [];
         if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
             foreach (explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
                 $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
@@ -294,7 +303,21 @@ class Dotenv
         }
         else {
             foreach ($this->getDomains() as $domain) {
-                $settings['trusted_host_patterns'][] = '^' . str_replace('.', '\.', $domain) . '$';
+                if (! $this->isMultiSite() || $this->isMultiSiteDefaultSiteAllowed()) {
+                    $settings['trusted_host_patterns'][] = '^' . \str_replace('.', '\.', $domain) . '$';
+                    $settings['trusted_host_patterns'][] = '^www\.' . \str_replace('.', '\.', $domain) . '$';
+                }
+
+                foreach ($this->getSites() as $site) {
+                    if ($site === 'default') {
+                        continue;
+                    }
+
+                    $settings['trusted_host_patterns'][] = \vsprintf('^%s\.%s$', [
+                        $site,
+                        \str_replace('.', '\.', $domain),
+                    ]);
+                }
             }
         }
 
