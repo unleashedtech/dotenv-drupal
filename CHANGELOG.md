@@ -4,6 +4,15 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [1.0.0] - TBD
+
+### Changed
+
+- Required PHPUnit for dev installations.
+- Required UT PHPCS for dev installations.
+- Added initial set of unit tests.
+- Cleaned up code style.
+
 ## [0.2.0] - 2022-03-14
 
 ### Changed
@@ -135,7 +144,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/1.0.0...main
+[1.0.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...1.0.0
 [0.2.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...0.2.0
 [0.1.17]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.16...0.1.17
 [0.1.16]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.15...0.1.16
