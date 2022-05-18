@@ -16,7 +16,16 @@ class Dotenv
     private string $databaseName;
 
     /**
-     * @var string The name of the Drupal site being configured.
+     * @var string The machine name of the Drupal app being configured.
+     *
+     * e.g. "earth"
+     */
+    private string $appName = 'default';
+
+    /**
+     * @var string The machine name of the Drupal app site being configured.
+     *
+     * e.g. "antarctica", which is a site of the "earth" Drupal multi-site app.
      */
     private string $siteName = 'default';
 
@@ -31,7 +40,7 @@ class Dotenv
     public function __construct()
     {
         // Load data from ENV file(s) if APP_ENV is not defined.
-        if (!isset($_SERVER['APP_ENV'])) {
+        if (! $this->getEnvironmentName()) {
             $root = $this->getProjectPath();
             $dotenv = new SymfonyDotenv();
             if (file_exists($root . '/.env') || file_exists($root . '/.env.dist')) {
@@ -41,6 +50,25 @@ class Dotenv
                 $dotenv->load(DRUPAL_ROOT . '/../.env.dev');
             }
         }
+    }
+
+    /**
+     * Gets the name of the App.
+     *
+     * @return string
+     *   The name of the App.
+     */
+    public function getAppName(): string
+    {
+        return $this->appName;
+    }
+
+    /**
+     * Sets the name of the App.
+     */
+    public function setAppName(string $appName): string
+    {
+        return $this->appName = $appName;
     }
 
     /**
@@ -59,7 +87,7 @@ class Dotenv
      * @param string $siteName
      *   The name the site.
      */
-    public function setSiteName(string $siteName)
+    public function setSiteName(string $siteName): string
     {
         return $this->siteName = $siteName;
     }
@@ -67,10 +95,10 @@ class Dotenv
     /**
      * Gets the environment name.
      *
-     * @return string
+     * @return string:null
      *   The environment name.
      */
-    public function getEnvironmentName(): string
+    public function getEnvironmentName(): ?string
     {
         return strtolower($_SERVER['APP_ENV']);
     }
@@ -113,9 +141,10 @@ class Dotenv
     {
         $config = [];
 
-        // Default to having shield enabled.
-        if (isset($_SERVER['SHIELD'])) {
-            $config['shield.settings']['shield_enable'] = (bool) $_SERVER['SHIELD'];
+        // Default to having Shield enabled.
+        $isPublic = $this->get('public');
+        if ($isPublic) {
+            $config['shield.settings']['shield_enable'] = (bool) $isPublic;
         } else {
             $config['shield.settings']['shield_enable'] = TRUE;
         }
@@ -160,37 +189,26 @@ class Dotenv
         }
 
         // Configure Mailgun.
-        if (isset($_SERVER['MAILGUN_URL'])) {
-            $parts = parse_url($_SERVER['MAILGUN_URL']);
+        $mailgunUrl = $this->get('mailgun_url');
+        if ($mailgunUrl) {
+            $parts = parse_url($mailgunUrl);
             $config['mailgun.settings']['api_endpoint'] = vsprintf('%s://%s', [
                 'scheme' => $parts['scheme'] ?? 'https',
                 'host' => $parts['host'] ?? 'api.mailgun.net',
             ]);
-            $config['mailgun.settings']['api_key'] = $parts['user'] ?? 'key-1234567890abcdefghijklmnopqrstu';
+            $config['mailgun.settings']['api_key'] = $parts['user'] ?? '';
         }
 
         // Configure Shield if enabled.
         if ($config['shield.settings']['shield_enable']) {
-            if (isset($_SERVER['SHIELD_USERNAME'])) {
-                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD_USERNAME'];
-            } elseif (isset($_SERVER['SHIELD'])) {
-                $config['shield.settings']['credentials']['shield']['user'] = $_SERVER['SHIELD'];
-            }
-
-            if (isset($_SERVER['SHIELD_PASSWORD'])) {
-                $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD_PASSWORD'];
-            } elseif (isset($_SERVER['SHIELD'])) {
-                $config['shield.settings']['credentials']['shield']['pass'] = $_SERVER['SHIELD'];
-            }
-
-            if (isset($_SERVER['SHIELD_MESSAGE'])) {
-                $config['shield.settings']['print'] = $_SERVER['SHIELD_MESSAGE'];
-            }
+            $config['shield.settings']['credentials']['shield']['user'] = $this->getAppName();
+            $config['shield.settings']['credentials']['shield']['pass'] = $this->getSiteName();
         }
 
         // Configure Solr.
-        if (isset($_SERVER['SOLR_URL'])) {
-            $parts = parse_url($_SERVER['SOLR_URL']);
+        $solrUrl = $this->get('solr_url');
+        if ($solrUrl) {
+            $parts = parse_url($solrUrl);
             $name = $parts['fragment'] ?? 'default';
             $config['search_api.server.' . $name]['backend_config']['connector_config'] = [
                 'scheme' => $parts['scheme'] ?? 'http',
@@ -207,7 +225,9 @@ class Dotenv
 
     public function getDatabases(): array
     {
-        $db_url = parse_url($_SERVER['DATABASE_URL']);
+        $db_url = parse_url($this->get('database_url'));
+        $username = $db_url['user'] ?? $this->get('database_user');
+        $password = $db_url['pass'] ?? $this->get('database_password');
         $databases = [
             'default' =>
                 [
@@ -215,8 +235,8 @@ class Dotenv
                         [
                             'database' => $this->getDatabaseName(),
                             'host' => $db_url['host'],
-                            'username' => $db_url['user'],
-                            'password' => $db_url['pass'],
+                            'username' => $username,
+                            'password' => $password,
                             'prefix' => '',
                             'port' => $db_url['port'],
                             'namespace' => 'Drupal\\Core\\Database\\Driver\\' . $db_url['scheme'],
@@ -233,7 +253,7 @@ class Dotenv
         if (isset($this->databaseName)) {
             return $this->databaseName;
         }
-        $result = parse_url($_SERVER['DATABASE_URL'], PHP_URL_PATH);
+        $result = parse_url($this->get('database_url'), PHP_URL_PATH);
         if (NULL === $result || trim($result) === '/') {
             // Multi-site configuration detected. Use the site name.
             $result = $this->getSiteName();
@@ -257,6 +277,10 @@ class Dotenv
     public function setDatabaseName(string $database): void
     {
         $this->databaseName = $database;
+    }
+
+    private function getAppSiteNamespace(): string {
+        return strtoupper($this->getAppName() . '__' . $this->getSiteName() . '__');
     }
 
     public function isMultiSite(): bool
@@ -289,15 +313,19 @@ class Dotenv
         $settings['file_public_path'] = $this->getPublicFilePath();
         $settings['file_private_path'] = $this->getPrivateFilePath();
         $settings['file_temp_path'] = $this->getTemporaryFilePath();
-        if (isset($_SERVER['HASH_SALT'])) {
-            $settings['hash_salt'] = $_SERVER['HASH_SALT'];
+
+        // Configure hash salt.
+        $hashSalt = $this->get('hash_salt');
+        if ($hashSalt) {
+            $settings['hash_salt'] = $hashSalt;
         }
 
         // Configure trusted host patterns.
         // @see https://github.com/unleashedtech/dotenv-drupal/blob/main/README.md#trusted_host_patterns
+        $trustedHostPatterns = $this->get('trusted_host_patterns');
         $settings['trusted_host_patterns'] = [];
-        if (isset($_SERVER['TRUSTED_HOST_PATTERNS'])) {
-            foreach (explode(',', $_SERVER['TRUSTED_HOST_PATTERNS']) as $pattern) {
+        if ($trustedHostPatterns) {
+            foreach (explode(',', $trustedHostPatterns) as $pattern) {
                 $settings['trusted_host_patterns'][] = '^' . $pattern . '$';
             }
         }
@@ -333,8 +361,9 @@ class Dotenv
                 ];
                 $settings['hash_salt'] = 'foo';
                 $settings['rebuild_access'] = FALSE;
-                if (isset($_SERVER['VIRTUAL_HOST'])) {
-                    $settings['trusted_host_patterns'][] = $_SERVER['VIRTUAL_HOST'];
+                $virtualHost = $this->get('virtual_host');
+                if ($virtualHost) {
+                    $settings['trusted_host_patterns'][] = $virtualHost;
                 }
                 $settings['skip_permissions_hardening'] = TRUE;
                 $settings['update_free_access'] = FALSE;
@@ -349,6 +378,18 @@ class Dotenv
         return $settings;
     }
 
+    public function get($key): ?string {
+        $key = strtoupper($key);
+        $namespacedKey = strtoupper($this->getAppName() . '__' . $this->getSiteName()) . '__' . $key;
+        if (isset($_SERVER[$namespacedKey])) {
+            return $_SERVER[$namespacedKey];
+        }
+        if (isset($_SERVER[$key])) {
+            return $_SERVER[$key];
+        }
+        return NULL;
+    }
+
     /**
      * Gets the domains for this environment.
      *
@@ -356,7 +397,7 @@ class Dotenv
      *   The domains for this environment.
      */
     public function getDomains(): array {
-        return \explode(',', $_SERVER['DOMAINS'] ?? 'default.example');
+        return \explode(',', $this->get('domains') ?? 'default.example');
     }
 
     /**
@@ -368,7 +409,7 @@ class Dotenv
     public function getSites(): array
     {
         $domains   = $this->getDomains();
-        $siteNames = \explode(',', $_SERVER['SITES'] ?? 'default');
+        $siteNames = \explode(',', $this->get('sites') ?? 'default');
         $sites     = [];
         foreach ($siteNames as $siteName) {
             foreach ($domains as $domain) {
@@ -391,22 +432,22 @@ class Dotenv
 
     public function getPublicFilePath(): string
     {
-        return $_SERVER['FILE_PUBLIC_PATH'] ?? 'sites/' . $this->getSiteName() . '/files';
+        return $this->get('file_public_path') ?? 'sites/' . $this->getSiteName() . '/files';
     }
 
     public function getPrivateFilePath(): string
     {
-        return $_SERVER['FILE_PRIVATE_PATH'] ?? $this->getProjectPath() . '/drupal/private_files';
+        return $this->get('file_private_path') ?? $this->getProjectPath() . '/drupal/private_files';
     }
 
     public function getTemporaryFilePath(): string
     {
-        return $_SERVER['FILE_TEMP_PATH'] ?? $this->getProjectPath() . '/drupal/temporary_files';
+        return $this->get('file_temp_path') ?? $this->getProjectPath() . '/drupal/temporary_files';
     }
 
     public function getConfigSyncPath(): string
     {
-        return $_SERVER['CONFIG_SYNC_PATH'] ?? $this->getProjectPath() . '/drupal/config/sync';
+        return $this->get('config_sync_path') ?? $this->getProjectPath() . '/drupal/config/sync';
     }
 
 }

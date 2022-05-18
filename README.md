@@ -107,6 +107,12 @@ Environment variables can be set in `.env` files, or via modifying server config
 For production environments, environment variables should ideally be defined via server
 configuration.
 
+Multi-site installations often need config that differs from the default site.
+This package first checks for variables following the `{{ app }}__{{ site }}__{{ var }}`
+naming convention, before falling back to the `{{ var }}` naming convention.
+
+You can provide site-specific information via namespaced environment variables.
+
 * [DATABASE_URL](#database_url)
 * [FILE_PUBLIC_PATH](#file_public_path)
 * [FILE_PRIVATE_PATH](#file_private_path)
@@ -114,10 +120,7 @@ configuration.
 * [CONFIG_SYNC_PATH](#config_sync_path)
 * [DOMAINS](#domains)
 * [MAILGUN_URL](#mailgun_url)
-* [SHIELD](#shield)
-* [SHIELD_USERNAME](#shield_username)
-* [SHIELD_PASSWORD](#shield_password)
-* [SHIELD_MESSAGE](#shield_message)
+* [PUBLIC](#public)
 * [SITES](#sites)
 * [SOLR_URL](#solr_url)
 * [TRUSTED_HOST_PATTERNS](#trusted_host_patterns)
@@ -133,13 +136,35 @@ DATABASE_URL=driver://user:password@host:port/database
 For example:
 
 ```dotenv
-DATABASE_URL=mysql://foo:bar@host:3306/baz
+DATABASE_URL=mysql://foo:bar@localhost:3306/baz
 ```
 
-For multi-site installations, do _not_ specify a database name in the `DATABASE_URL` variable:
+For multi-site installations, do _not_ specify a database name nor credentials in
+the `DATABASE_URL` variable:
 
 ```dotenv
-DATABASE_URL=mysql://foo:bar@host:3306
+DATABASE_URL=mysql://localhost:3306
+```
+
+For an "earth" Drupal App with a "default" site & an "antarctica" site:
+```dotenv
+DATABASE_URL=mysql://localhost:3306
+
+EARTH__DEFAULT__DATABASE_USER=foo
+EARTH__DEFAULT__DATABASE_PASSWORD=bar
+
+EARTH__ANTARCTICA__DATABASE_USER=baz
+EARTH__ANTARCTICA__DATABASE_PASSWORD=qux
+```
+
+The default Drupal [App Name](#app-name) is "default". For most use cases, you'll want to set the
+Drupal [App Name](#app-name) in the default `settings.php` file, as shown below:
+```php
+<?php
+use UnleashedTech\Drupal\Dotenv\Dotenv;
+$dotenv = $dotenv ?? new Dotenv();
+$dotenv->setAppName('earth');
+// ...
 ```
 
 #### FILE_PUBLIC_PATH
@@ -194,27 +219,15 @@ MAILGUN_URL=https://key-1234567890abcdefghijklmnopqrstu@api.mailgun.net
 MAILGUN_URL=https://key-1234567890abcdefghijklmnopqrstu@api.eu.mailgun.net
 ```
 
-#### SHIELD
+#### PUBLIC
 A string allowing the enabling/disabling of Shield module auth functionality.
 
-If empty, shield will not be enabled.
+If `true`, Shield will not be enabled.
 
-If filled, the string will be used as username & password by default.
+If `false`, the username will be the [App Name](#app-name) & the password will
+be the [Site Name](#site-name).
 
 Note: _Make sure the "Enable Shield" checkbox is checked in Drupal & that config is committed._
-
-##### SHIELD_USERNAME
-The username for Shield to require, if enabled.
-
-This package will use the value of `SHIELD` as username, by default.
-
-##### SHIELD_PASSWORD
-The password for Shield to require, if enabled.
-
-This package will use the value of `SHIELD` as password, by default.
-
-##### SHIELD_MESSAGE
-The _public_ message Shield should show in the auth prompt if enabled.
 
 #### SITES
 A CSV list of Drupal "sites" (e.g. "subdomains") used by the given environment:
@@ -252,6 +265,14 @@ Start (`^`) & end (`$`) characters are added to every pattern, by default.
 If the `TRUSTED_HOST_PATTERNS` variable is _not_ set, this package will populate
 Drupal's `trusted_host_patterns` array based on the values of [DOMAINS](#domains)
 & [SITES](#sites) variables.
+
+###### Terms
+
+###### App Name
+The machine name of the Drupal App (e.g. "default" or "earth").
+
+###### Site Name
+The site name for a Drupal App Site (e.g. "default" or "antarctica").
 
 ###### Examples
 If you have `DOMAINS` set to `foo.example,bar.example`, the Drupal `trusted_host_patterns`
