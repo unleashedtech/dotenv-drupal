@@ -121,6 +121,7 @@ You can provide site-specific information via namespaced environment variables.
 * [DOMAINS](#domains)
 * [MAILGUN_URL](#mailgun_url)
 * [PUBLIC](#public)
+* [SALT](#salt)
 * [SITES](#sites)
 * [SOLR_URL](#solr_url)
 * [TRUSTED_HOST_PATTERNS](#trusted_host_patterns)
@@ -236,6 +237,17 @@ A CSV list of Drupal "sites" (e.g. "subdomains") used by the given environment:
 SITES=foo,bar,baz,qux
 ```
 
+#### SALT
+A string used for "one-time login links, cancel links, form tokens, etc."
+
+[Best Practices Issue](https://www.drupal.org/project/drupal/issues/3107548)
+
+Use `drush eval "var_dump(Drupal\Component\Utility\Crypt::randomBytesBase64(55))"` to generate one.
+
+```dotenv
+SALT=generatedSaltValue
+```
+
 #### SOLR_URL
 The default Solr connection can be configured via a [DSN](https://en.wikipedia.org/wiki/Data_source_name):
 
@@ -266,14 +278,6 @@ If the `TRUSTED_HOST_PATTERNS` variable is _not_ set, this package will populate
 Drupal's `trusted_host_patterns` array based on the values of [DOMAINS](#domains)
 & [SITES](#sites) variables.
 
-###### Terms
-
-###### App Name
-The machine name of the Drupal App (e.g. "default" or "earth").
-
-###### Site Name
-The site name for a Drupal App Site (e.g. "default" or "antarctica").
-
 ###### Examples
 If you have `DOMAINS` set to `foo.example,bar.example`, the Drupal `trusted_host_patterns`
 settings array would have the following values:
@@ -289,6 +293,14 @@ Drupal `trusted_host_patterns` setting array would have the following values:
 * `^bar\.foo\.example$`
 * `^baz\.foo\.example$`
 * `^qux\.foo\.example$`
+
+#### Terms
+
+##### App Name
+The machine name of the Drupal App (e.g. "default" or "earth").
+
+##### Site Name
+The site name for a Drupal App Site (e.g. "default" or "antarctica").
 
 #### Configuration Conclusion
 With these few Environment Variables, you will be able to configure Drupal in a streamlined

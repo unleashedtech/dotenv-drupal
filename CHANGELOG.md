@@ -9,6 +9,7 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 ### Changed
 
 - Added support for namespaced variable names.
+- Added support for `SALT`.
 - Removed support for `SHIELD*` vars. Use `PUBLIC` instead.
 
 ## [0.2.1] - 2022-03-30

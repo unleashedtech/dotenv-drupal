@@ -40,7 +40,7 @@ class Dotenv
     public function __construct()
     {
         // Load data from ENV file(s) if APP_ENV is not defined.
-        if (! $this->getEnvironmentName()) {
+        if (! isset($_SERVER['APP_ENV'])) {
             $root = $this->getProjectPath();
             $dotenv = new SymfonyDotenv();
             if (file_exists($root . '/.env') || file_exists($root . '/.env.dist')) {
@@ -95,10 +95,10 @@ class Dotenv
     /**
      * Gets the environment name.
      *
-     * @return string:null
+     * @return string
      *   The environment name.
      */
-    public function getEnvironmentName(): ?string
+    public function getEnvironmentName(): string
     {
         return strtolower($_SERVER['APP_ENV']);
     }
@@ -279,10 +279,6 @@ class Dotenv
         $this->databaseName = $database;
     }
 
-    private function getAppSiteNamespace(): string {
-        return strtoupper($this->getAppName() . '__' . $this->getSiteName() . '__');
-    }
-
     public function isMultiSite(): bool
     {
         return count($this->getSites()) > 1;
@@ -313,12 +309,7 @@ class Dotenv
         $settings['file_public_path'] = $this->getPublicFilePath();
         $settings['file_private_path'] = $this->getPrivateFilePath();
         $settings['file_temp_path'] = $this->getTemporaryFilePath();
-
-        // Configure hash salt.
-        $hashSalt = $this->get('hash_salt');
-        if ($hashSalt) {
-            $settings['hash_salt'] = $hashSalt;
-        }
+        $settings['hash_salt'] = $this->get('salt');
 
         // Configure trusted host patterns.
         // @see https://github.com/unleashedtech/dotenv-drupal/blob/main/README.md#trusted_host_patterns
@@ -378,14 +369,22 @@ class Dotenv
         return $settings;
     }
 
-    public function get($key): ?string {
-        $key = strtoupper($key);
-        $namespacedKey = strtoupper($this->getAppName() . '__' . $this->getSiteName()) . '__' . $key;
-        if (isset($_SERVER[$namespacedKey])) {
-            return $_SERVER[$namespacedKey];
+    /**
+     * Gets the value for the given Environment Variable key.
+     * This method will first try to return the value of `{{ app }}__{{ site }}__{{ var }}`.
+     * If that variable is not defined, it will try to return the value of `{{ var }}`.
+     *
+     * @param $var
+     * @return string|null
+     */
+    public function get($var): ?string {
+        $var = strtoupper($var);
+        $namespacedVar = strtoupper($this->getAppName() . '__' . $this->getSiteName()) . '__' . $var;
+        if (isset($_SERVER[$namespacedVar])) {
+            return $_SERVER[$namespacedVar];
         }
-        if (isset($_SERVER[$key])) {
-            return $_SERVER[$key];
+        if (isset($_SERVER[$var])) {
+            return $_SERVER[$var];
         }
         return NULL;
     }
