@@ -4,6 +4,12 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 ## [Unreleased][unreleased]
 
+## [0.3.1] - 2022-05-19
+
+### Changed
+
+- Added support for `DATABASE_NAME` variables.
+
 ## [0.3.0] - 2022-05-17
 
 ### Changed
@@ -149,7 +155,8 @@ Updates should follow the [Keep a CHANGELOG](https://keepachangelog.com/) princi
 
 **Initial release!**
 
-[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.3.0...main
+[unreleased]: https://github.com/unleashedtech/dotenv-drupal/compare/0.3.1...main
+[0.3.1]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.1...0.3.1
 [0.3.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/unleashedtech/dotenv-drupal/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/unleashedtech/dotenv-drupal/compare/0.1.17...0.2.0
