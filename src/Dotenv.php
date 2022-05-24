@@ -254,14 +254,18 @@ class Dotenv
             return $this->databaseName;
         }
         $result = parse_url($this->get('database_url'), PHP_URL_PATH);
-        if (NULL === $result || trim($result) === '/') {
-            // Multi-site configuration detected. Use the site name.
-            $result = $this->getSiteName();
-            if ($result === 'default' && !$this->isMultiSiteDefaultSiteAllowed()) {
-                if (PHP_SAPI === 'cli') {
-                    throw new \Exception('The "default" site in this multi-site install is not allowed. Please run something like `drush -l {{site}}` instead.');
-                } else {
-                    header("HTTP/1.1 401 Unauthorized");
+        if (NULL === $result || trim($result) === '/' || trim($result) === '') {
+            // Multi-site configuration detected. Try to use the DATABASE_NAME variable.
+            $result = $this->get('database_name');
+            if (! $result) {
+                // Fall back to using the site name.
+                $result = $this->getSiteName();
+                if ($result === 'default' && !$this->isMultiSiteDefaultSiteAllowed()) {
+                    if (PHP_SAPI === 'cli') {
+                        throw new \DomainException('The "default" site in this multi-site install is not allowed. Please run something like `drush -l {{site}}` instead.');
+                    }
+
+                    \header('HTTP/1.1 401 Unauthorized');
                     die('Unauthorized');
                 }
             }

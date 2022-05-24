@@ -168,6 +168,12 @@ $dotenv->setAppName('earth');
 // ...
 ```
 
+The database name for a site can be overridden via definition of a `{{ app }}__{{ site }}__DATABASE_NAME`
+environment variable:
+```dotenv
+EARTH__ANTARCTICA__DATABASE_NAME=ant
+```
+
 #### FILE_PUBLIC_PATH
 Allows you to override the default `$settings['file_public_path']` value:
 
