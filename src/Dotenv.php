@@ -254,7 +254,7 @@ class Dotenv
             return $this->databaseName;
         }
         $result = parse_url($this->get('database_url'), PHP_URL_PATH);
-        if (NULL === $result || trim($result) === '/') {
+        if (NULL === $result || trim($result) === '/' || trim($result) === '') {
             // Multi-site configuration detected. Try to use the DATABASE_NAME variable.
             $result = $this->get('database_name');
             if (! $result) {
